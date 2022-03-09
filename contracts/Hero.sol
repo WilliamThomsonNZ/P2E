@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 //  **We want to be able to generate random Hereos.
@@ -24,9 +26,9 @@ contract Hero {
         Mage,
         Healer,
         Barbarian,
-        Durid
+        Assa
     }
-    mapping(address => uint256[]) addressToHeroes;
+    mapping(address => uint256[]) public addressToHeroes;
 
     function getHeroes() public view returns (uint256[] memory) {
         return addressToHeroes[msg.sender];
@@ -41,27 +43,39 @@ contract Hero {
     }
 
     function getHeroClass(uint256 hero) public pure returns (uint32) {
-        return uint32((hero) & 0x02);
+        //We are grabbing the first two bits and using them to determine the class
+        //00, 01, 10, 11
+        //0, 1, 2, 3
+
+        return uint32((hero) & 0x3);
     }
 
-    function getStrength(uint256 hero) public pure returns (uint256) {
-        return (hero >> 2) & 0x1F;
+    function getStrength(uint256 hero) public pure returns (uint32) {
+        //We first shift the hero binary number over by 2 places
+        //We then bitwise & the next 5 bits starting at the 3rd bit so we don't get the class( & always pulls out of the binary number)
+        //0x1F as binary
+        //11111
+        //5 bits of data
+        //F = 15
+        //1111
+
+        return uint32((hero >> 2) & 0x1F);
     }
 
-    function getHealth(uint256 hero) public pure returns (uint256) {
-        return (hero >> 7) & 0x1F;
+    function getHealth(uint256 hero) public pure returns (uint32) {
+        return uint32((hero >> 7) & 0x1F);
     }
 
-    function getDex(uint256 hero) public pure returns (uint256) {
-        return (hero >> 12) & 0x1F;
+    function getDex(uint256 hero) public pure returns (uint32) {
+        return uint32((hero >> 12) & 0x1F);
     }
 
-    function getIntelect(uint256 hero) public pure returns (uint256) {
-        return (hero >> 17) & 0x1F;
+    function getIntelect(uint256 hero) public pure returns (uint32) {
+        return uint32((hero >> 17) & 0x1F);
     }
 
     function getMagic(uint256 hero) public pure returns (uint32) {
-        return uint32((hero >> 22) & 0x15);
+        return uint32((hero >> 22) & 0x1F);
     }
 
     function createHero(Class class) public payable {
